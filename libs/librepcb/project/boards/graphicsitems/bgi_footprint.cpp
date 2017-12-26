@@ -110,14 +110,13 @@ void BGI_Footprint::updateCacheAndRepaint() noexcept
 
     // texts
     for (const Text& text : mLibFootprint.getTexts()) {
-        // get the text to display
+        layer = getLayer(text.getLayerName());
+        if (!layer) continue;
+        if (!layer->isVisible()) continue;
+
         QString str = AttributeSubstitutor::substitute(text.getText(), &mFootprint);
-
-        // get font
         const StrokeFont& font = mFootprint.getProject().getStrokeFonts().getFont("librepcb.bene");
-
-        // create stroke
-        mTextPainterPaths[&text].addPath(font.stroke(str, text.getHeight().toPx()));
+        mTextPainterPaths[&text].addPath(font.stroke(str, text.getHeight()));
     }
 
     if (!mShape.isEmpty())
@@ -211,6 +210,7 @@ void BGI_Footprint::paint(QPainter* painter, const QStyleOptionGraphicsItem* opt
     }
 
     // draw all texts
+    QElapsedTimer timer; timer.start();
     for (const Text& text : mLibFootprint.getTexts()) {
         // get layer
         layer = getLayer(text.getLayerName());
@@ -221,6 +221,7 @@ void BGI_Footprint::paint(QPainter* painter, const QStyleOptionGraphicsItem* opt
         painter->setBrush(Qt::NoBrush);
         painter->drawPath(mTextPainterPaths[&text]);
     }
+    qDebug() << timer.elapsed();
 
     // draw all holes
     for (const Hole& hole : mLibFootprint.getHoles()) {

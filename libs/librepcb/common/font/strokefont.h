@@ -25,6 +25,7 @@
  ****************************************************************************************/
 #include <QtCore>
 #include <QtWidgets>
+#include "../units/all_length_units.h"
 #include "../fileio/filepath.h"
 
 /*****************************************************************************************
@@ -32,6 +33,7 @@
  ****************************************************************************************/
 namespace fontobene {
 class Font;
+class Vertex;
 }
 
 namespace librepcb {
@@ -54,11 +56,16 @@ class StrokeFont final
         ~StrokeFont() noexcept;
 
         // General Methods
-        QPainterPath stroke(const QString& text, qreal size) const noexcept;
-        QPainterPath stroke(const QChar& glyph, qreal size) const noexcept;
+        QPainterPath stroke(const QString& text, const Length& size) const noexcept;
+        QPainterPath stroke(const QChar& glyph, const Length& size) const noexcept;
 
         // Operator Overloadings
         StrokeFont& operator=(const StrokeFont& rhs) noexcept;
+
+
+    private:
+        static Point vertex2point(const fontobene::Vertex& v, const Length& size) noexcept;
+        static Angle vertex2angle(const fontobene::Vertex& v) noexcept;
 
 
     private: // Data

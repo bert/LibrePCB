@@ -23,6 +23,7 @@
 #include <QtCore>
 #include "strokefont.h"
 #include "../fileio/fileutils.h"
+#include "../geometry/polygon.h"
 #include <fontobene/parser.h>
 
 /*****************************************************************************************
@@ -59,26 +60,28 @@ StrokeFont::~StrokeFont() noexcept
  *  General Methods
  ****************************************************************************************/
 
-QPainterPath StrokeFont::stroke(const QString& text, qreal size) const noexcept
+QPainterPath StrokeFont::stroke(const QString& text, const Length& size) const noexcept
 {
     QPainterPath p;
-    qreal x = 0;
+    Length x = 0;
     foreach (const QChar& c, text) {
-        p.addPath(stroke(c, size).translated(x, 0));
+        p.addPath(stroke(c, size).translated(x.toPx(), 0));
         x += size;
     }
     return p;
 }
 
-QPainterPath StrokeFont::stroke(const QChar& glyph, qreal size) const noexcept
+QPainterPath StrokeFont::stroke(const QChar& glyph, const Length& size) const noexcept
 {
     QPainterPath p;
-    foreach (const fontobene::Polyline& l, mFont->value(glyph.unicode()).polylines) {
+    foreach (const fontobene::Polyline& l, mFont->glyphs.value(glyph.unicode())) {
         if (l.isEmpty()) continue;
-        p.moveTo(l.first().x * size / 9, l.first().y * size / 9);
+        Polygon polygon(QString(), Length(0), false, false, vertex2point(l.first(), size));
         foreach (const fontobene::Vertex& v, l) {
-            p.lineTo(v.x * size / 9, v.y * size / 9);
+            polygon.getSegments().append(
+                std::make_shared<PolygonSegment>(vertex2point(v, size), vertex2angle(v)));
         }
+        p.addPath(polygon.toQPainterPathPx());
     }
     return p;
 }
@@ -96,6 +99,17 @@ StrokeFont& StrokeFont::operator=(const StrokeFont& rhs) noexcept
 /*****************************************************************************************
  *  Private Methods
  ****************************************************************************************/
+
+Point StrokeFont::vertex2point(const fontobene::Vertex& v, const Length& size) noexcept
+{
+    fontobene::Vertex vs = v.scaled(size.toMm(), qreal(180));
+    return Point::fromMm(vs.x, vs.y);
+}
+
+Angle StrokeFont::vertex2angle(const fontobene::Vertex& v) noexcept
+{
+    return Angle::fromDeg(v.scaled(qreal(1), qreal(180)).bulge);
+}
 
 /*****************************************************************************************
  *  End of File
