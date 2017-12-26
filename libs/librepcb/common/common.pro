@@ -24,6 +24,7 @@ QT += core widgets xml opengl network sql
 CONFIG += staticlib
 
 INCLUDEPATH += \
+    ../../fontobene \
     ../../quazip \
     ../../sexpresso \
 
@@ -61,6 +62,8 @@ SOURCES += \
     fileio/smartsexprfile.cpp \
     fileio/smarttextfile.cpp \
     fileio/smartversionfile.cpp \
+    font/strokefont.cpp \
+    font/strokefontpool.cpp \
     geometry/cmd/cmdellipseedit.cpp \
     geometry/cmd/cmdholeedit.cpp \
     geometry/cmd/cmdpolygonedit.cpp \
@@ -157,6 +160,8 @@ HEADERS += \
     fileio/smartsexprfile.h \
     fileio/smarttextfile.h \
     fileio/smartversionfile.h \
+    font/strokefont.h \
+    font/strokefontpool.h \
     geometry/cmd/cmdellipseedit.h \
     geometry/cmd/cmdholeedit.h \
     geometry/cmd/cmdpolygonedit.h \

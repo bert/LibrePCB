@@ -17,87 +17,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREPCB_PROJECT_BGI_FOOTPRINT_H
-#define LIBREPCB_PROJECT_BGI_FOOTPRINT_H
+#ifndef LIBREPCB_STROKEFONTPOOL_H
+#define LIBREPCB_STROKEFONTPOOL_H
 
 /*****************************************************************************************
  *  Includes
  ****************************************************************************************/
+#include <memory>
 #include <QtCore>
-#include <QtWidgets>
-#include "bgi_base.h"
+#include "strokefont.h"
 
 /*****************************************************************************************
  *  Namespace / Forward Declarations
  ****************************************************************************************/
 namespace librepcb {
 
-class Text;
-class GraphicsLayer;
-
-namespace library {
-class Footprint;
-}
-
-namespace project {
-
-class BI_Footprint;
-
 /*****************************************************************************************
- *  Class BGI_Footprint
+ *  Class StrokeFontPool
  ****************************************************************************************/
 
 /**
- * @brief The BGI_Footprint class
- *
- * @author ubruhin
- * @date 2015-05-24
+ * @brief The StrokeFontPool class
  */
-class BGI_Footprint final : public BGI_Base
+class StrokeFontPool final
 {
-    public:
+        Q_DECLARE_TR_FUNCTIONS(StrokeFontPool)
 
+    public:
         // Constructors / Destructor
-        explicit BGI_Footprint(BI_Footprint& footprint) noexcept;
-        ~BGI_Footprint() noexcept;
+        StrokeFontPool(const FilePath& directory);
+        StrokeFontPool(const StrokeFontPool& other) = delete;
+        ~StrokeFontPool() noexcept;
 
         // Getters
-        bool isSelectable() const noexcept;
+        const StrokeFont& getFont(const QString& filename) const;
 
-        // General Methods
-        void updateCacheAndRepaint() noexcept;
-
-        // Inherited from QGraphicsItem
-        QRectF boundingRect() const noexcept {return mBoundingRect;}
-        QPainterPath shape() const noexcept {return mShape;}
-        void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0);
+        // Operator Overloadings
+        StrokeFontPool& operator=(const StrokeFontPool& rhs) noexcept;
 
 
-    private:
-
-        // make some methods inaccessible...
-        BGI_Footprint() = delete;
-        BGI_Footprint(const BGI_Footprint& other) = delete;
-        BGI_Footprint& operator=(const BGI_Footprint& rhs) = delete;
-
-        // Private Methods
-        GraphicsLayer* getLayer(QString name) const noexcept;
-
-        // General Attributes
-        BI_Footprint& mFootprint;
-        const library::Footprint& mLibFootprint;
-
-        // Cached Attributes
-        QRectF mBoundingRect;
-        QPainterPath mShape;
-        QHash<const Text*, QPainterPath> mTextPainterPaths;
+    private: // Data
+        QHash<QString, std::shared_ptr<StrokeFont>> mFonts;
 };
 
 /*****************************************************************************************
  *  End of File
  ****************************************************************************************/
 
-} // namespace project
 } // namespace librepcb
 
-#endif // LIBREPCB_PROJECT_BGI_FOOTPRINT_H
+#endif // LIBREPCB_STROKEFONTPOOL_H
