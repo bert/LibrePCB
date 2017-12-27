@@ -60,20 +60,22 @@ StrokeFont::~StrokeFont() noexcept
  *  General Methods
  ****************************************************************************************/
 
-QPainterPath StrokeFont::stroke(const QString& text, const Length& size) const noexcept
+QList<Polygon> StrokeFont::stroke(const QString& text, const Length& size) const noexcept
 {
-    QPainterPath p;
+    QList<Polygon> polygons;
     Length x = 0;
     foreach (const QChar& c, text) {
-        p.addPath(stroke(c, size).translated(x.toPx(), 0));
-        x += size;
+        foreach (const Polygon& p, stroke(c, size/2)) {
+            polygons.append(p.translated(Point(x, 0)));
+        }
+        x += size/2;
     }
-    return p;
+    return polygons;
 }
 
-QPainterPath StrokeFont::stroke(const QChar& glyph, const Length& size) const noexcept
+QList<Polygon> StrokeFont::stroke(const QChar& glyph, const Length& size) const noexcept
 {
-    QPainterPath p;
+    QList<Polygon> polygons;
     foreach (const fontobene::Polyline& l, mFont->glyphs.value(glyph.unicode())) {
         if (l.isEmpty()) continue;
         Polygon polygon(QString(), Length(0), false, false, vertex2point(l.first(), size));
@@ -81,9 +83,9 @@ QPainterPath StrokeFont::stroke(const QChar& glyph, const Length& size) const no
             polygon.getSegments().append(
                 std::make_shared<PolygonSegment>(vertex2point(v, size), vertex2angle(v)));
         }
-        p.addPath(polygon.toQPainterPathPx());
+        polygons.append(polygon);
     }
-    return p;
+    return polygons;
 }
 
 /*****************************************************************************************

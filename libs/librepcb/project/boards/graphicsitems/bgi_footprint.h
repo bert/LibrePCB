@@ -26,6 +26,7 @@
 #include <QtCore>
 #include <QtWidgets>
 #include "bgi_base.h"
+#include <librepcb/common/geometry/polygon.h>
 
 /*****************************************************************************************
  *  Namespace / Forward Declarations
@@ -83,14 +84,29 @@ class BGI_Footprint final : public BGI_Base
         // Private Methods
         GraphicsLayer* getLayer(QString name) const noexcept;
 
+        // Types
+
+        struct CachedTextProperties_t {
+            QString text;
+            int fontPixelSize;
+            qreal scaleFactor;
+            bool rotate180;
+            int flags;
+            QRectF textRect;    // not scaled
+        };
+
+
         // General Attributes
         BI_Footprint& mFootprint;
         const library::Footprint& mLibFootprint;
+        QFont mFont;
 
         // Cached Attributes
         QRectF mBoundingRect;
         QPainterPath mShape;
-        QHash<const Text*, QPainterPath> mTextPainterPaths;
+        QHash<const Text*, CachedTextProperties_t> mCachedTextProperties;
+
+        QHash<const Text*, QList<Polygon>> mTextPolygons;
 };
 
 /*****************************************************************************************

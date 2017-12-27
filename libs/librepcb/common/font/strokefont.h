@@ -27,6 +27,7 @@
 #include <QtWidgets>
 #include "../units/all_length_units.h"
 #include "../fileio/filepath.h"
+#include "../geometry/polygon.h"
 
 /*****************************************************************************************
  *  Namespace / Forward Declarations
@@ -56,8 +57,8 @@ class StrokeFont final
         ~StrokeFont() noexcept;
 
         // General Methods
-        QPainterPath stroke(const QString& text, const Length& size) const noexcept;
-        QPainterPath stroke(const QChar& glyph, const Length& size) const noexcept;
+        QList<Polygon> stroke(const QString& text, const Length& size) const noexcept;
+        QList<Polygon> stroke(const QChar& glyph, const Length& size) const noexcept;
 
         // Operator Overloadings
         StrokeFont& operator=(const StrokeFont& rhs) noexcept;
