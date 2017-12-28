@@ -65,10 +65,12 @@ QList<Polygon> StrokeFont::stroke(const QString& text, const Length& size) const
     QList<Polygon> polygons;
     Length x = 0;
     foreach (const QChar& c, text) {
-        foreach (const Polygon& p, stroke(c, size/2)) {
+        QPainterPath path;
+        foreach (const Polygon& p, stroke(c, size)) {
+            path.addPath(p.toQPainterPathPx());
             polygons.append(p.translated(Point(x, 0)));
         }
-        x += size/2;
+        x += Length::fromPx(path.boundingRect().right()) + (size * 3) / 10;
     }
     return polygons;
 }

@@ -68,7 +68,7 @@ Footprint::Footprint(const SExpression& node) :
     mTexts.loadFromDomElement(node);
     mHoles.loadFromDomElement(node);
 
-    QList<std::shared_ptr<Text>> texts;
+    /*QList<std::shared_ptr<Text>> texts;
     for (const Text& text : mTexts) {
         for (int i = 1; i < 100; i++) {
             std::shared_ptr<Text> t2 = std::make_shared<Text>(text);
@@ -78,7 +78,7 @@ Footprint::Footprint(const SExpression& node) :
     }
     foreach (auto& t, texts) {
         mTexts.append(t);
-    }
+    }*/
 }
 
 Footprint::~Footprint() noexcept
